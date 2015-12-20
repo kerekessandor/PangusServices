@@ -1,0 +1,88 @@
+﻿@model PangusServices.Models.Depozitare
+
+@{
+    ViewBag.Title = "Depozitare nr.: " +@Model.DepozitareID;
+}
+
+@using(Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.DepozitareID)
+    @Html.HiddenFor(x => x.IsDepozitare)
+    @Html.HiddenFor(x => x.Sfantu_Mciuc)
+
+    <div class="row">
+        <div class="form-group form-group-sm col-lg-3">
+            <label>Nume / Client</label>
+            @Html.TextBoxFor(x => x.FirstName, new { @class="form-control"})
+        </div>
+
+        <div class="form-group form-group-sm col-lg-3">
+            <label>Prenume / Delegat</label>
+            @Html.TextBoxFor(x => x.LastName, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group form-group-sm col-lg-3">
+            <label>Data</label>
+            @Html.TextBoxFor(x => x.Data, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group form-group-sm col-lg-3">
+            <label>Nr.Inmatriculare</label>
+            @Html.TextBoxFor(x => x.NrInmatricuare, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group form-group-sm col-lg-3">
+            <label>Dimensiune</label>
+            @Html.TextBoxFor(x => x.Dimensiune, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group form-group-sm col-lg-3">
+            <label>Anvelopa</label>
+            @Html.DropDownList("AnvelopeID", null, new { @class = "form-control AnvelopeID" })
+        </div>
+
+        <div class="form-group form-group-sm col-lg-3">
+            <label>Profil</label>
+            @Html.DropDownList("ProfilID", null, new { @class = "form-control ProfilID" })
+        </div>
+
+        <div class="form-group form-group-sm col-lg-3">
+            <label>Cantitate</label>
+            @Html.TextBoxFor(x => x.Cantitate, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group form-group-sm col-lg-6">
+            <label>Descriere</label>
+            @Html.TextAreaFor(x => x.Descriere, new { @class = "form-control" })
+        </div>
+    </div>
+    
+    <input type="submit" value="Salvare" class="btn btn-primary" />
+    <a href="@Url.Action("Index")" class="btn btn-default">Inapoi</a>
+}
+
+@section Scripts{
+    <script>
+        $(".AnvelopeID").change(function () {
+            $(".ProfilID").empty();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.RouteUrl("SelectProfils")',
+                dataType: 'json',
+                data: { id: $(".AnvelopeID").val() },
+                success: function (profils) {
+                    $.each(profils, function (i, profil) {
+                        $(".ProfilID").append('<option value="'
+                            + profil.ProfilID + '">'
+                            + profil.Name + '</option>');
+                    });
+                },
+                error: function (ex) {
+                    alert('Failed to retrieve states.' + ex.responseText);
+                }
+            });
+            return false;
+        })
+    </script>
+}

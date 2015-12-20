@@ -1,0 +1,342 @@
+﻿@model PagedList.IPagedList<PangusServices.Models.Main>
+@using PagedList.Mvc
+
+@{
+    IEnumerable<PangusServices.ViewModels.PaymentNumberGroup> raport = ViewBag.raporti;
+
+
+    ViewBag.Title = "Raport Detailat";
+
+
+
+    <h3 class="text-center">Raport detailat  @ViewBag.tim</h3>
+    <h5 class="text-center">@ViewBag.isUser</h5>
+    <br />
+
+    <div class="row form-group container-fluid">
+        @using (Html.BeginForm("RaportD", "Raport", FormMethod.Get))
+        {
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon" id="basic-addon1">De la</span>
+                        @Html.TextBox("start", null, new { @class = "form-control", id = "start", name = "start" })
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon" id="basic-addon1">pana la</span>
+                        @Html.TextBox("end", null, new { @class = "form-control", id = "end", name = "end" })
+                    </div>
+                </div>
+                <div class="col-lg-2">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon input-sm" id="basic-addon1">Show</span>
+                        @Html.DropDownList("numList", (SelectList)ViewBag.numList, new { onchange = "$(this).closest('form').submit();", @class="form-control"})
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-default btn-sm">Filtrare</button>
+                @Html.ActionLink("Print", "Print", new { start = @ViewBag.start, end = @ViewBag.end }, new { @class = "btn btn-success btn-sm" })
+            </div>
+        }
+    </div>
+
+
+
+    <div class="row">
+        <div class="panel panel-default">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Nr.</th>
+                        <th class="col-lg-2">Nr.Inm.</th>
+                        <th>Nume / Client</th>
+                        <th>Prenume / Delegat</th>
+                        <th>Nr.Deviz</th>
+                        <th>Discount</th>
+                        @foreach (var rap in raport)
+                        {
+                            <th class="text-center col-lg-1">
+                                @rap.PaymentMethod
+                            </th>
+                        }
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Count() == 0)
+                    {
+                        <tr>
+                            <td colspan="11" class="text-center">Nu sunt servicii efectuate pentru data de @DateTime.Today.ToShortDateString()</td>
+                        </tr>
+                    }
+                    @{
+                        var number = ViewBag.number;
+                    }
+                    @foreach (var item in Model)
+                    {
+                        number++;
+                        <tr>
+                            <td>@number</td>
+                            <td>@Html.DisplayFor(x => item.CarDetail.NrInmatricular)</td>
+                            @if (item.Customer.pFizica_pJuridica == true)
+                            {
+                                <td>@Html.DisplayFor(x => item.Customer.FirstName)</td>
+                                <td>@Html.DisplayFor(x => item.Customer.LastName)</td>
+                            }
+                            else
+                            {
+                                <td>@Html.DisplayFor(x => item.Customer.Client)</td>
+                                <td>@Html.DisplayFor(x => item.Customer.Delegat)</td>
+                            }
+                            <td>@item.MainID</td>
+                            <td class="col-lg-1">
+                                @if (item.Discount == null || item.Discount == 0)
+                                {
+                                    <b>0%</b>
+                                }
+                                else
+                                {
+                                    <b>@item.Discount%</b>
+                                }
+                            </td>
+                            @foreach (var rap in raport.ToList())
+                            {
+                                if (item.PaymentMethod.Name == rap.PaymentMethod)
+                                {
+                                    <td class="text-center">
+                                        @{
+                                    int osszeg = 0;
+                                    float price = 0;
+                                    float cantitate = 0;
+                                    foreach (var sum in item.CustomerServices)
+                                    {
+                                        if (item.AnvelopeNoi.NoiRulate == false)
+                                        {
+                                            price = sum.Pret * sum.Cantitate;
+                                        }
+                                        else if (item.AnvelopeNoi.Cantitate >= sum.Cantitate && sum.IsEditable)
+                                        {
+                                            price = 0;
+                                        }
+                                        else if (sum.IsEditable && sum.Cantitate != null && item.AnvelopeNoi.Cantitate != null)
+                                        {
+                                            cantitate = sum.Cantitate - (float)item.AnvelopeNoi.Cantitate;
+                                            price = sum.Pret * (float)cantitate;
+                                        }
+                                        else
+                                        {
+                                            price = sum.Pret * sum.Cantitate;
+                                        }
+                                        osszeg += (int)price;
+                                    }
+                                        }
+                                        @if (item.Discount == null || item.Discount == 0)
+                                        {
+                                            <b>@osszeg.ToString("#,##0.00")</b>
+                                        }
+                                        else
+                                        {
+                                            osszeg = (int)((float)(osszeg - ((item.Discount * osszeg) / 100)));
+                                            <b>@osszeg.ToString("#,##0.00")</b>
+                                        }
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td> </td>
+                                }
+                            }
+
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="6"><b class="pull-right">Total:</b></td>
+                        @foreach (var item in raport)
+                        {
+                            float osszesen = 0;
+                            float price = 0;
+                            float cantitate = 0;
+                            foreach (var total in Model)
+                            {
+                                if (total.PaymentMethod.Name == item.PaymentMethod)
+                                {
+                                    foreach (var sum in total.CustomerServices)
+                                    {
+                                        if (total.AnvelopeNoi.NoiRulate == false)
+                                        {
+                                            if (total.Discount == 0 || total.Discount == null)
+                                            {
+                                                price = sum.Pret * sum.Cantitate;
+                                            }
+                                            else
+                                            {
+                                                price = sum.Pret * sum.Cantitate;
+                                                price = (float)(price - ((total.Discount * price) / 100));
+                                            }
+                                        }
+                                        else if (total.AnvelopeNoi.Cantitate >= sum.Cantitate && sum.IsEditable)
+                                        {
+                                            price = 0;
+                                        }
+                                        else if (sum.IsEditable && total.AnvelopeNoi.Cantitate != null)
+                                        {
+                                            if (total.Discount == 0 || total.Discount == null)
+                                            {
+                                                cantitate = sum.Cantitate - (float)total.AnvelopeNoi.Cantitate;
+                                                price = sum.Pret * (float)cantitate;
+                                            }
+                                            else
+                                            {
+                                                cantitate = sum.Cantitate - (float)total.AnvelopeNoi.Cantitate;
+                                                price = sum.Pret * (float)cantitate;
+                                                price = (float)(price - ((total.Discount * price) / 100));
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (total.Discount == 0 || total.Discount == null)
+                                            {
+                                                price = sum.Pret * sum.Cantitate;
+                                            }
+                                            else
+                                            {
+                                                price = sum.Pret * sum.Cantitate;
+                                                price = (float)(price - ((total.Discount * price) / 100));
+                                            }
+                                        }
+                                        osszesen += price;
+                                    }
+
+                                }
+                            }
+                            <td class="text-center success">
+                                <b>
+                                    @(osszesen.ToString("#,##0.00"))
+                                </b>
+                            </td>
+                        }
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+}
+
+<h3 class="text-center">Raport diferenta  @ViewBag.tim</h3>
+<h5 class="text-center">@ViewBag.isUser</h5>
+<br />
+
+@{
+    float Gosszegi = 0;
+
+    <div class="row">
+        <div class="panel panel-default">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Nr.</th>
+                        <th class="col-lg-2">Nr.Inmatriculare</th>
+                        <th>Nume / Client</th>
+                        <th>Prenume / Delegat</th>
+                        <th>Nr.Deviz</th>
+                        <th class="text-center col-lg-1">Neplatit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var diffNumber = 1;
+                    }
+                    @foreach (var item in Model)
+                    {
+                        if (item.AnvelopeNoi.NoiRulate == true)
+                        {
+                            float osszegi = 0;
+                            <tr>
+                                <td>@diffNumber</td>
+                                <td>@Html.DisplayFor(x => item.CarDetail.NrInmatricular)</td>
+                                @if (item.Customer.pFizica_pJuridica == true)
+                                {
+                                    <td>@Html.DisplayFor(x => item.Customer.FirstName)</td>
+                                    <td>@Html.DisplayFor(x => item.Customer.LastName)</td>
+                                }
+                                else
+                                {
+                                    <td>@Html.DisplayFor(x => item.Customer.Client)</td>
+                                    <td>@Html.DisplayFor(x => item.Customer.Delegat)</td>
+                                }
+                                <td>@Html.DisplayFor(x => item.MainID)</td>
+                                <td class="text-center">
+                                    @foreach (var cust in item.CustomerServices)
+                                    {
+                                        float pret = 0;
+                                        float cantitate = 0;
+                                        if (cust.IsEditable && item.AnvelopeNoi.Cantitate != null)
+                                        {
+                                            if (item.AnvelopeNoi.Cantitate >= cust.Cantitate)
+                                            {
+                                                pret = cust.Cantitate * cust.Pret;
+                                            }
+                                            else
+                                            {
+                                                cantitate = (float)item.AnvelopeNoi.Cantitate;
+                                                pret = cantitate * cust.Pret;
+                                            }
+                                            osszegi += pret;
+                                        }
+                                    }
+                                    @osszegi.ToString("#,##0.00")
+                                    @{ Gosszegi += osszegi; }
+                                    @{
+                            diffNumber++;
+                                    }
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5"><b class="pull-right">Total:</b></td>
+                        <td class="text-center success"><b>@Gosszegi.ToString("#,##0.00")</b></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div class="pull-right">
+        <i class="text-center">Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount</i>
+
+        @Html.PagedListPager(Model, page => Url.Action("RaportD", new { page, start = ViewBag.start, end = ViewBag.end, nmb = number, numList = ViewBag.fwdNumber }))
+    </div>
+}
+
+@section Scripts
+{
+    <script>
+        $(function () {
+            $("#start").datepicker({
+                defaultDate: "+1w",
+                changeMonth: true,
+                numberOfMonths: 2,
+                onClose: function (selectedDate) {
+                    $("#end").datepicker("option", "minDate", selectedDate);
+                }
+            });
+
+            $("#end").datepicker({
+                defaultDate: "+1w",
+                changeMonth: true,
+                numberOfMonths: 2,
+                onClose: function (selectedDate) {
+                    $("#start").datepicker("option", "maxDate", selectedDate);
+                }
+            });
+        });
+    </script>
+}

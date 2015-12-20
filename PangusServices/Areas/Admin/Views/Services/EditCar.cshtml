@@ -1,0 +1,69 @@
+﻿@model PangusServices.Models.CarDetail
+
+@{
+    ViewBag.Title = "EditCar" + @Model.MarcaAuto;
+}
+
+@using(Html.BeginForm())
+{
+    @Html.HiddenFor(x => x.CarDetailID)
+    @Html.HiddenFor(x => x.CarTypeID)
+    @Html.HiddenFor(x => x.Descriere)
+    @Html.AntiForgeryToken()
+
+    <div class="row">
+        <div class="form-group col-sm-3">
+            <label>Nr. de inmatriculare</label>
+            @if (ViewBag.IsDepo)
+            {
+                @Html.TextBoxFor(x => x.NrInmatricular, new { @class="form-control", @readonly = "readonly"})
+            }
+            else 
+            { 
+                @Html.TextBoxFor(x => x.NrInmatricular, new { @class = "form-control" })
+            }
+        </div>
+
+        <div class="form-group col-sm-3">
+            <label>Marca auto</label>
+            @Html.TextBoxFor(x => x.MarcaAuto, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group col-sm-3">
+            <label>Km rulati</label>
+            @Html.TextBoxFor(x => x.KmRulati, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group col-sm-3">
+            <label>Dimensiune Anvelopa</label>
+            @Html.TextBoxFor(x => x.DimensiuneaA, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group col-sm-3">
+            <div class="btn-group-justified" data-toggle="buttons">
+                @if (Model.AluminiuOtel)
+                {
+                    <label class="pdsa-radiobutton btn btn-default active">
+                        @Html.RadioButtonFor(x => x.AluminiuOtel, true) Aluminiu
+                    </label>
+                    <label class="pdsa-radiobutton btn btn-default default">
+                        @Html.RadioButtonFor(x => x.AluminiuOtel, false) Otel
+                    </label>
+                }
+                else
+                {
+                    <label class="pdsa-radiobutton btn btn-default default">
+                        @Html.RadioButtonFor(x => x.AluminiuOtel, true) Aluminiu
+                    </label>
+                    <label class="pdsa-radiobutton btn btn-default active">
+                        @Html.RadioButtonFor(x => x.AluminiuOtel, false) Otel
+                    </label>
+                }
+            </div>
+        </div>
+    </div>
+
+    <input type="submit" value="Salvare" class="btn btn-primary" />
+    <a href="@Url.Action("Details", new { id = ViewBag.backToEdit})" class="btn btn-default">Inapoi</a>
+
+}

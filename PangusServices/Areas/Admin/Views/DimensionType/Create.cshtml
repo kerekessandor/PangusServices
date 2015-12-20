@@ -1,0 +1,21 @@
+﻿@model PangusServices.Models.dimType
+
+@{
+    ViewBag.Title = "Nou";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="row">
+        <div class="form-group form-group-sm col-lg-4">
+            <label>Denumire</label>
+            @Html.TextBoxFor(x => x.Name, new { @class = "form-control" })
+        </div>
+    </div>
+    
+    <input type="submit" class="btn btn-primary" value="Salvare"/>
+    <a href="@Url.Action("Index")" class="btn btn-default">Inapoi</a>
+}
+

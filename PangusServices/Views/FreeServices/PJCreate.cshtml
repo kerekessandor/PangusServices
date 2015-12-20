@@ -1,0 +1,406 @@
+﻿@model PangusServices.Models.Main
+
+@{
+    ViewBag.Title = "Formular Nou";
+}
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+@using (Html.BeginForm())
+{
+
+                                //Fejlec - Datum
+                            <div class="row container-fluid">
+                                <div class="text-right col-sm-6">
+                                    <b>FISA DE LUCRU</b>
+                                </div>
+                                <div class="form-group pull-right col-sm-2">
+                                    @Html.TextBoxFor(x => x.Customer.Date, new { @class = "form-control text-center date", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            //Vezetek Nev KeresztNev
+                            <div class="panel panel-default">
+                                <div class="panel panel-heading text-center">
+                                    Detalii Client
+                                </div>
+                                <div class="row col-sm-offset-2">
+                                    <div class="form-group col-sm-5">
+                                        <label>Client</label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-user"></span>
+                                            </span>
+                                            @Html.TextBoxFor(x => x.Customer.Client, new { @class = "form-control", @id = "firme"  })
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group col-sm-5">
+                                        <label>Delegat</label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-user"></span>
+                                            </span>
+                                            @Html.TextBoxFor(x => x.Customer.Delegat, new { @class = "form-control" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            //--------------------------------------------------------Vezetek Nev KeresztNev
+                            
+                            @*@foreach(var item in Model.Customer.Mains)*@
+                            <div class="panel panel-default">
+                                <div class="panel panel-heading text-center">
+                                    Detalii Masina
+                                </div>
+
+                                <div class="row container-fluid">
+
+                                    <div class="form-group col-sm-3">
+                                        <label>Nr. Inmatriculare</label>
+                                        @Html.TextBoxFor(x => x.CarDetail.NrInmatricular, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(x => x.CarDetail.NrInmatricular)
+                                    </div>
+
+                                    <div class="form-group col-sm-3">
+                                        <label>Marca Auto</label>
+                                        @Html.TextBoxFor(x => x.CarDetail.MarcaAuto, new { @class="form-control"})
+                                    </div>
+
+                                    <div class="form-group col-sm-3">
+                                        <label>Categorie Auto</label>
+                                        @Html.DropDownListFor(x => x.CarDetail.CarTypeID, (SelectList)ViewBag.CarTypeID, new { @class="form-control"})
+                                    </div>
+
+                                    <div class="form-group col-sm-3">
+                                        <label>Km la Bord</label>
+                                        @Html.TextBoxFor(x => x.CarDetail.KmRulati, new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+    
+    <div class="panel panel-default">
+        <div class="panel panel-heading text-center">
+            Detalii Anvelopa
+        </div>
+        <div class="row container-fluid col-lg-offset-2">
+            <div class="form-group col-sm-5">
+                <label>Anvelope/Jante Montate: </label>
+                <div class="btn-group-justified" data-toggle="buttons">
+                    <label id="elso" class="pdsa-radiobutton btn btn-default">
+                        <span id="ikonegy" class="glyphicon glyphicon-unchecked"></span>
+                        @Html.RadioButtonFor(x => x.AnvelopeNoi.NoiRulate, true) Noi
+                    </label>
+                    <label id="masodik" class="pdsa-radiobutton btn btn-default">
+                        <span id="ikonketto" class="glyphicon glyphicon-unchecked"></span>
+                        @Html.RadioButtonFor(x => x.AnvelopeNoi.NoiRulate, false) Rulate
+                    </label>
+                </div>
+                @Html.ValidationMessageFor(x => x.AnvelopeNoi.NoiRulate)
+            </div>
+
+            <div class="form-group col-sm-5">
+                <label>Janta:  </label>
+                <div class="btn-group-justified" data-toggle="buttons">
+                    <label id="harmadik" class="pdsa-radiobutton btn btn-default">
+                        <span id="ikonharom" class="glyphicon glyphicon-unchecked"></span>
+                        @Html.RadioButtonFor(x => x.CarDetail.AluminiuOtel, true) Aluminiu
+                    </label>
+                    <label id="negyedik" class="pdsa-radiobutton btn btn-default">
+                        <span id="ikonnegy" class="glyphicon glyphicon-unchecked"></span>
+                        @Html.RadioButtonFor(x => x.CarDetail.AluminiuOtel, false) Otel
+                    </label>
+                </div>
+                @Html.ValidationMessageFor(x => x.CarDetail.AluminiuOtel)
+            </div>
+        </div>
+
+        <div class="row container-fluid" id="AnvelopeNoi">
+            <div class="form-group col-sm-3">
+                <label>Marca Anvelopa</label>
+                @Html.DropDownList("AnvelopeID", null, string.Empty, new { @class = "form-control" })
+            </div>
+
+            <div class="form-group col-sm-3">
+                <label>Profil Anvelopa</label>
+                @*@Html.DropDownList("ProfilID", null, string.Empty, new { @class="form-control"})*@
+                @Html.DropDownListFor(x => x.AnvelopeNoi.ProfilID, (SelectList)ViewBag.ProfilID, string.Empty,new { @class = "form-control custProfilID"})
+            </div>
+
+            <div class="form-group col-sm-3">
+                <label>Dot/Serie</label>
+                @Html.TextBoxFor(x => x.AnvelopeNoi.DotSerie, new { @class = "form-control" })
+            </div>
+
+            <div class="form-group col-sm-3">
+                <label>Cantitate</label>
+                @Html.TextBoxFor(x => x.AnvelopeNoi.Cantitate, new { @class = "form-control" })
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="form-group">
+        <div>
+        <div class="panel panel-default">
+            <div class="panel-heading text-center">
+                Servicii Executate
+            </div>
+            <table class="table table-hover table-bordered">
+                <thead>
+                    <tr>
+                        <th>Servicii</th>
+                        <th></th>
+                        <th>Cantitate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        @{
+                            int cnt = 0;
+                            List<PangusServices.ViewModels.AssignedServicesData> servicii = ViewBag.Serviciis;
+
+                            foreach (var service in servicii)
+                            {
+                                if (cnt++ % 1 == 0)
+                                {
+                                    @:</tr><tr>
+                                }
+                                @:<td>
+                                    <input type="checkbox"
+                                           name="selectedServicii"
+                                           id="checkbox1"
+                                           value="@service.ServiciiId"
+                                           @(Html.Raw(service.Assigned ? "checked=\"checked\"" : "")) />
+                                    @service.ServiciiName
+
+                                    @:</td>
+                                    <td>
+                                        <label> => </label>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="selectedCantitate" value="0" id="selectedCantiate" class="form-control"/>
+                                    </td>
+                            }
+                            @:</tr>
+                        }
+
+                    <tr>
+                        <th>Altele</th>
+                        <th>Cantitate</th>
+                        <th>Pret</th>
+                    </tr>
+                    <tr>
+
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+         </div>
+    
+        //Descriere
+        
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Mentiuni
+            </div>
+            @Html.TextAreaFor(x => x.CarDetail.Descriere, new { @class="form-control"})
+        </div>
+
+        <div class="form-group">
+            <label class="btn btn-success btn-sm" id="depozitare"><i class="glyphicon glyphicon-plus"></i>Depozitare</label>
+            <label class="btn btn-success btn-sm" id="add"><i class="glyphicon glyphicon-plus"></i>Informatii Suplimentare</label>
+        </div>
+
+    <div id="depozitareInfo">
+        <div class="panel panel-default">
+            <div class="panel panel-heading text-center">
+                Depozitare
+            </div>
+            <div class="container-fluid">
+                <div class="row container-fluid">
+                    <div class="form-group col-sm-6">
+                        <div data-toggle="buttons">
+                            <label class="pdsa-radiobutton btn btn-default">
+                                @Html.RadioButtonFor(x => x.Depozitare.IsDepozitare, true) CU Depozitare
+                            </label>
+                            <label class="pdsa-radiobutton btn btn-default">
+                                @Html.RadioButtonFor(x => x.Depozitare.IsDepozitare, false, new { @checked = "checked"}) FARA Depozitare
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group pull-right col-sm-2"> 
+                        @Html.TextBoxFor(x => x.Depozitare.Data, new { @class = "form-control date", @readonly = "readonly" })
+                    </div>
+                </div>
+                
+                <div class="form-group col-sm-3">
+                    <label>Dimensiune</label>
+                    @Html.TextBoxFor(x => x.Depozitare.Dimensiune, new { @class = "form-control" })
+                </div>
+
+                <div class="form-group col-sm-3">
+                    <label>Anvelope</label>
+                    @Html.DropDownList("AnvelopeID", null, string.Empty, new { @class = "form-control DepoAnvelope" })
+                </div>
+
+                <div class="form-group col-sm-3">
+                    <label>Profil</label>
+                    @*@Html.DropDownList("ProfilID", null, string.Empty, new { @class = "form-control", @id = "descriereProfil" })*@
+                    @Html.DropDownListFor(x => x.Depozitare.ProfilID, (SelectList)ViewBag.ProfilID,string.Empty, new { @class="form-control DepoProfil"})
+                </div>
+
+                <div class="form-group col-sm-3">
+                    <label>Cantitate</label>
+                    @Html.TextBoxFor(x => x.Depozitare.Cantitate, new { @class = "form-control" })
+                </div>
+
+                <div class="form-group col-sm-12">
+                    <label>Descriere</label>
+                    @Html.TextAreaFor(x => x.Depozitare.Descriere, new { @class="form-control"})
+                </div> 
+            </div>
+        </div>
+    </div>
+
+    <div id="info">
+        <div class="panel panel-default">
+            <div class="panel panel-heading text-center">
+                Informatii Suplimentare
+            </div>
+            <div class="row container-fluid">
+                <div class="form-group col-sm-6">
+                    <label>Email</label>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-envelope"></span>
+                        </span>
+                        @Html.TextBoxFor(x => x.Customer.Email, new { @class = "form-control", @id = "email", type = "email" })
+                    </div>
+                </div>
+
+                <div class="form-group col-sm-6">
+                    <label>Nr. Mobil</label>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-earphone"></span>
+                        </span>
+                        @Html.TextBoxFor(x => x.Customer.PhoneNumber, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        
+        <div class="btn-group-vertical col-lg-12 text-center">
+            <b>@Html.DropDownListFor(x => x.OperatorID, (SelectList)ViewBag.OperatorID, "Selecteaza operator", new { @class = "form-control", @style="color:red; text-align:center", @disabled="disabled"})</b>
+            <input type="submit" value="Salvare" class="btn btn-primary" id="submitBtn" />
+            <a href="@Url.Action("Index")" class="btn btn-default">Inapoi</a>
+        </div>
+}
+
+@section Scripts{
+
+    <script>
+                $(document).ready(function () {
+                    $('#AnvelopeNoi').hide();
+                    $('#info').hide();
+                    $('#depozitareInfo').hide();
+
+                    $('#add').click(function () {
+                        $('#info').toggle('slow');
+                    });
+
+            $('#depozitare').click(function () {
+            $('#depozitareInfo').toggle('slow');
+            });
+
+            $(function () {
+                $("#firme").autocomplete({
+                    source: '@Url.Action("SelectFirmes")'
+                });
+            });
+
+        var date = new Date();
+        var time = (date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear();
+        $('.date').val(time);
+
+        $('#masodik').click(function () {
+            $(this).removeClass('pdsa-radiobutton btn btn-default default').addClass('pdsa-radiobutton btn btn-default active');
+            $('#elso').removeClass('pdsa-radiobutton btn btn-default active').addClass('pdsa-radiobutton btn btn-default primary');
+            $('#ikonegy').removeClass('glyphicon-check').addClass('glyphicon-unchecked');
+            $('#ikonketto').removeClass('glyphicon-unchecked').addClass('glyphicon-check');
+            $('#AnvelopeNoi').hide('slow');
+
+        });
+        $('#elso').click(function () {
+            $(this).removeClass('pdsa-radiobutton btn btn-default default').addClass('pdsa-radiobutton btn btn-default active');
+            $('#masodik').removeClass('pdsa-radiobutton btn btn-default active').addClass('pdsa-radiobutton btn btn-default default');
+            $('#ikonketto').removeClass('glyphicon-check').addClass('glyphicon-unchecked');
+            $('#ikonegy').removeClass('glyphicon-unchecked').addClass('glyphicon-check');
+            $('#AnvelopeNoi').show('slow');
+        });
+
+
+        $('#negyedik').click(function () {
+            $(this).removeClass('pdsa-radiobutton btn btn-default default').addClass('pdsa-radiobutton btn btn-default active');
+            $('#harmadik').removeClass('pdsa-radiobutton btn btn-default active').addClass('pdsa-radiobutton btn btn-default primary');
+            $('#ikonharom').removeClass('glyphicon-check').addClass('glyphicon-unchecked');
+            $('#ikonnegy').removeClass('glyphicon-unchecked').addClass('glyphicon-check');
+
+        });
+        $('#harmadik').click(function () {
+            $(this).removeClass('pdsa-radiobutton btn btn-default default').addClass('pdsa-radiobutton btn btn-default active');
+            $('#negyedik').removeClass('pdsa-radiobutton btn btn-default active').addClass('pdsa-radiobutton btn btn-default default');
+            $('#ikonnegy').removeClass('glyphicon-check').addClass('glyphicon-unchecked');
+            $('#ikonharom').removeClass('glyphicon-unchecked').addClass('glyphicon-check');
+        });
+
+        //Dropdownlist Selectedchange event
+        $("#AnvelopeID").change(function () {
+            $(".custProfilID").empty();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.RouteUrl("SelectProfils")',
+                            dataType: 'json',
+                            data: { id: $("#AnvelopeID").val() },
+                            success: function (profils) {
+                                $.each(profils, function (i, profil) {
+                                    $(".custProfilID").append('<option value="'
+                                        + profil.ProfilID + '">'
+                                        + profil.Name + '</option>');
+                                });
+                            },
+                            error: function (ex) {
+                                alert('Failed to retrieve states.' + ex.responseText);
+                            }
+                        });
+                        return false;
+                    })
+
+                    $(".DepoAnvelope").change(function () {
+                        $(".DepoProfil").empty();
+                        $.ajax({
+                            type: 'POST',
+                            url: '@Url.RouteUrl("SelectProfils")',
+                            dataType: 'json',
+                            data: { id: $(".DepoAnvelope").val() },
+                            success: function (profils) {
+                                $.each(profils, function (i, profil) {
+                                    $(".DepoProfil").append('<option value="'
+                                        + profil.ProfilID + '">'
+                                        + profil.Name + '</option>');
+                                });
+                            },
+                            error: function (ex) {
+                                alert('Failed to retrieve states.' + ex.responseText);
+                            }
+                        });
+                        return false;
+                    })
+
+                });
+      </script>
+}
+
+

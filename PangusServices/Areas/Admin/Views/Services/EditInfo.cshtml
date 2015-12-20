@@ -1,0 +1,66 @@
+﻿@model PangusServices.Models.Customer
+@{
+    ViewBag.Title = "Editare" + @Model.FirstName + @Model.LastName;
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.ID)
+    @Html.HiddenFor(x => x.pFizica_pJuridica)
+    <div class="row">
+        @if (Model.pFizica_pJuridica == true)
+        {
+            <div class="form-group col-sm-4">
+                <label>Nume</label>
+                @Html.TextBoxFor(x => x.FirstName, new { @class = "form-control" })
+            </div>
+
+            <div class="form-group col-sm-4">
+                <label>Prenume</label>
+                @Html.TextBoxFor(x => x.LastName, new { @class = "form-control" })
+            </div>
+        }
+        else
+        {
+            <div class="form-group col-sm-4">
+                <label>Client</label>
+                @Html.TextBoxFor(x => x.Client, new { @class = "form-control", @id = "firme" })
+            </div>
+
+            <div class="form-group col-sm-4">
+                <label>Delegat</label>
+                @Html.TextBoxFor(x => x.Delegat, new { @class = "form-control" })
+            </div>
+        }
+        <div class="form-group col-sm-4">
+            <label>Data</label>
+            @Html.TextBoxFor(x => x.Date, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="form-group col-sm-4">
+            <label>Email</label>
+            @Html.TextBoxFor(x => x.Email, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group col-sm-4">
+            <label>Nr.Telefon Mobil</label>
+            @Html.TextBoxFor(x => x.PhoneNumber, new { @class = "form-control" })
+        </div>
+    </div>
+
+    <input type="submit" value="Salveaza" class="btn btn-primary" />
+    <a href="@Url.Action("Details", new { id = Model.ID})" class="btn btn-default">Inapoi</a>
+}
+
+@section scripts{
+    <script>
+        $(function () {
+            $("#firme").autocomplete({
+                source: '@Url.Action("SelectFirmes")'
+            });
+        });
+    </script>
+}

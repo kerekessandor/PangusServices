@@ -1,0 +1,277 @@
+﻿@model PangusServices.Models.Customer
+
+<html>
+<head>
+    <title>Raport</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        #mentiuni {
+            padding-top: 45px;
+        }
+
+        .footer {
+            position: fixed;
+            text-align: center;
+            bottom: 0px;
+            width: 100%;
+        }
+
+        .header{
+            top:0px;
+            text-align:center;
+            position:absolute;
+            width:100%;
+        }
+   } 
+    </style>
+</head>
+@foreach (var item in Model.Mains)
+{
+    <body>
+        <h6>SC Pangus Service SRL <br />  RO 7444191 / J19/351/1995 <br /> PL. Sfantu Gheorghe <br /> Tel. 0367 409 500 / 0742 201 098 <br /> Email: pangus@rdsbv.ro <br /></h6>
+        <div class="header">
+            <p><b style="font-size:20px">FISA DE LUCRU</p>
+            <p style="font-size:x-small">
+                Punct de lucru: @if (item.Sfantu_MCiuc == true)
+                {
+                    @:Sfantu Gheorghe
+                            }
+                else
+                {
+                    @:Miercurea Ciuc
+                            }
+            </p>
+        </div>
+        <table style=" width:100%">
+            <tr>
+                <td>Nr.Inreg: <b>@item.MainID</b></td>
+                <td>Data: <b>@Model.Date.Day/@Model.Date.Month/@Model.Date.Year</b></td>
+                <td>Nr.Factura: <b>@item.MainID</b></td>
+            </tr>
+        </table>
+        <table style=" width:100%">
+            <tr>
+                @if (Model.pFizica_pJuridica == true)
+                {
+                    <td>Nume: <b>@Model.FirstName</b></td>
+                    <td>Prenume: <b>@Model.LastName</b></td>
+                }
+                else
+                {
+                    <td>Client: <b>@Model.Client</b></td>
+                    <td>Delegat: <b>@Model.Delegat</b></td>
+                }
+            </tr>
+            <tr>
+                <td>Adresa de Email: <b>@Model.Email</b></td>
+                <td colspan="2">Tel. Fax.: <b>@Model.PhoneNumber</b></td>
+            </tr>
+            <tr>
+                <td>Tip auto: <b>@Html.DisplayFor(x => item.CarDetail.CarType.Name)</b></td>
+                <td colspan="2">Nr. Inmatriculare: <b>@Html.DisplayFor(x => item.CarDetail.NrInmatricular)</b></td>
+            </tr>
+            <tr>
+                <td>Km rulati: <b>@Html.DisplayFor(x => item.CarDetail.KmRulati)</b></td>
+                <td>Km / An: </td>
+            </tr>
+        </table>
+
+
+        <table style="width:100%; margin: 0 auto">
+            <caption><p style="font-size:medium"><b>Anvelope</b></p></caption>
+            @if (item.AnvelopeNoi.NoiRulate == false)
+            {
+                <tr>
+                    <th>Dimensiune</th>
+                    <th>RIM</th>
+                    <th></th>
+                </tr>
+                <tr style="text-align:center">
+                    <td>@Html.DisplayFor(x => item.CarDetail.DimensiuneaA)</td>
+                    <td>@Html.DisplayFor(x => item.CarDetail.Rim)</td>
+                    <td>Prorietarul are anvelope rulate</td>
+                </tr>
+            }
+            else
+            {
+                <thead>
+                    <tr>
+                        <th>Dimensiune</th>
+                        <th>RIM</th>
+                        <th>Denumire</th>
+                        <th>Profil</th>
+                        <th>Dot / Serie</th>
+                        <th>Cantitate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="text-align:center">
+                        <td>@Html.DisplayFor(x => item.CarDetail.DimensiuneaA)</td>
+                        <td>@Html.DisplayFor(x => item.CarDetail.Rim)</td>
+                        <td>@Html.DisplayFor(x => item.AnvelopeNoi.Profil.Anvelope.Marca)</td>
+                        <td>@Html.DisplayFor(x => item.AnvelopeNoi.Profil.Name)</td>
+                        <td>@Html.DisplayFor(x => item.AnvelopeNoi.DotSerie)</td>
+                        <td>@Html.DisplayFor(x => item.AnvelopeNoi.Cantitate)</td>
+
+                    </tr>
+                </tbody>
+            }
+        </table>
+
+        @{
+            float ar = 0;
+            float partialPrice = 0;
+            float totalAr = 0;
+            float totalPartialPrice = 0;
+        }
+
+        <table style="width:100%; margin:0 auto">
+            <caption><p style="font-size:medium"><b>Sumar servicii executate</b></p></caption>
+            <tr>
+                <th>Servicii</th>
+                <th>Cant.</th>
+                <th>Total</th>
+                <th>Platit</th>
+            </tr>
+            @foreach (var serv in item.CustomerServices)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(x => serv.NamedServ)
+                        (Pret/1buc.- @serv.Pret Ron)
+                    </td>
+                    <td style="text-align:center">
+                        @Html.DisplayFor(x => serv.Cantitate)
+                    </td>
+                    <td style="text-align:center">
+                        @{
+                ar = serv.Cantitate * serv.Pret;
+                <label>@ar.ToString("#,##0.00")</label>
+                totalAr += ar;
+                        }
+                    </td>
+                    <td style="text-align:center">
+                        @if (serv.IsEditable == true && item.AnvelopeNoi.Cantitate != null)
+                        {
+                            if (item.AnvelopeNoi.Cantitate >= serv.Cantitate)
+                            {
+                                partialPrice = 0;
+                                <label>@partialPrice</label>
+                            }
+                            else
+                            {
+                                partialPrice = (serv.Cantitate - (float)item.AnvelopeNoi.Cantitate) * serv.Pret;
+                                <label>@partialPrice.ToString("#,##0.00")</label>
+                            }
+                        }
+                        else
+                        {
+                            partialPrice = serv.Cantitate * serv.Pret;
+                            <label>@partialPrice.ToString("#,##0.00")</label>
+                        }
+                        @{
+                totalPartialPrice += partialPrice;
+                        }
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td>
+                    <b>
+                        Discount: @item.Discount
+                        @if (item.Discount == null)
+                        {
+                          @:0
+                        }
+                        %
+                    </b>
+                </td>
+                <td style="text-align:right"><b>Total:</b></td>
+                <td style="text-align:center"><b>@totalAr.ToString("#,##0.00")</b></td>
+                @{
+    var discounted = totalPartialPrice - ((totalPartialPrice * item.Discount) / 100);
+                }
+                <td style="text-align:center">
+                    <b>
+                        @if (item.Discount == null || item.Discount == 0)
+                        {
+                            <b>@totalPartialPrice.ToString("#,##0.00")</b>
+                        }
+                        else
+                        {
+                            <b>
+                                @{
+                                    var price = 0;
+                                    price = (int)discounted;
+                                }
+                                @price.ToString("#,##0.00")
+                            </b>
+                        }
+                    </b>
+                </td>
+            </tr>
+        </table>
+
+        @if (item.Depozitare.IsDepozitare == true)
+        {
+            <table style="width:100%">
+                <caption><p style="font-size:medium"><b>Depozitare</b></p></caption>
+                <thead>
+                    <tr>
+                        <th>Marca Anvelopa</th>
+                        <th>Profil Anvelopa</th>
+                        <th>Dimensiune</th>
+                        <th>Cantitate</th>
+                        <th>Mentiuni</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="text-align:center">
+                        <td>@item.Depozitare.Profil.Anvelope.Marca</td>
+                        <td>@item.Depozitare.Profil.Name</td>
+                        <td>@item.Depozitare.Dimensiune</td>
+                        <td>@item.Depozitare.Cantitate</td>
+                        <td>@item.Depozitare.Descriere</td>
+                    </tr>
+                </tbody>
+            </table>
+        }
+
+        <table style="width:100%">
+            <caption><p style="font:medium"><b>Mentiuni / Recomandari / Planificari</b></p></caption>
+            <tr>
+                @if (item.CarDetail.Descriere == null)
+                {
+                    <td id="mentiuni"></td>
+                }
+                else
+                {
+                    <td rowspan="3">@item.CarDetail.Descriere <br />  Altele: </td>
+                }
+            </tr>
+        </table>
+
+        <div class="row">
+            <div style="float:right">
+                <h4 style="text-align:right; font-size:medium">Semnatura<br /> <br />..................................</h4>
+            </div>
+
+            <div style="float:left">
+                <h4 style="text-align:right; font-size:medium">Semnatura / Stampila <br /> <br />..................................</h4>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p style="font-size:x-small">
+                ATENTIE: Orice reclamatie va fi insotita de prezentul certificat de garantie si anvelopa montata pe janta!<br />Aceata garantie acopera cel mult valoarea integrala a anvelopei reclamate.<br />
+                GARANTIA LUCRARILOR EFECTUATE, CONVENITA CU CLIENTUL, ESTE DE 30 ZILE DE LA DATA PREDARII AUTO LA CLIENT SI SE REFERA LA NECONFORMITATI DE MANOPERA CONFORM LEGII 222/2003.
+            </p>
+            <p style="font-size:small">IMPORTANT! Va rugam sa verificati strangerea rotilor dupa ce parcurgeti o distanta de aproximativ 50 km. !!!</p>
+        </footer>
+    </body>
+}
+</html>

@@ -1,0 +1,78 @@
+﻿@model IEnumerable<PangusServices.Models.Main>
+
+@{
+    ViewBag.Title = "RaportFirme";
+}
+
+<h4 class="text-center">Căutare avansată</h4>
+
+<div class="row form-group container-fluid">
+    @using (Html.BeginForm("PrintRaportFirme", "Raport", new { start = @ViewBag.start, end = @ViewBag.end }, FormMethod.Get))
+    {
+        <div class="row">
+            <div class="col-lg-3">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon" id="basic-addon1">De la</span>
+                    @Html.TextBox("start", null, new { @class = "form-control", id = "start", name = "start" })
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon" id="basic-addon1">Până la</span>
+                    @Html.TextBox("end", null, new { @class = "form-control", id = "end", name = "end" })
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon" id="basic-addon1">Firma</span>
+                    @Html.TextBox("firma", null, new { @class = "form-control", id = "firme" })
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-addon" id="basic-addon1">Mod de plată</span>
+                    @Html.DropDownList("PaymentMethodID", null, new { @class = "form-control", id = "paymentMethod" })
+                </div>
+            </div>
+        </div>
+    <div class="form-group text-center">
+        <br />
+        <button type="submit" class="btn btn-default btn-sm">Filter</button>
+    </div>
+    }
+</div>
+
+@section Scripts
+{
+    <script>
+        $(function () {
+            $("#firme").autocomplete({
+                source: '@Url.RouteUrl("SelectFirmes")'
+            });
+        });
+
+        $(function () {
+            $("#start").datepicker({
+                defaultDate: "+1w",
+                changeMonth: true,
+                numberOfMonths: 2,
+                onClose: function (selectedDate) {
+                    $("#end").datepicker("option", "minDate", selectedDate);
+                }
+            });
+
+            $("#end").datepicker({
+                defaultDate: "+1w",
+                changeMonth: true,
+                numberOfMonths: 2,
+                onClose: function (selectedDate) {
+                    $("#start").datepicker("option", "maxDate", selectedDate);
+                }
+            });
+        });
+    </script>
+}
+
+

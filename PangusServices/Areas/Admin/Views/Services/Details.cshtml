@@ -1,0 +1,526 @@
+﻿@model PangusServices.Models.Customer
+
+@{
+    ViewBag.Title = "Details";
+}
+
+@Html.HiddenFor(x => x.ID)
+
+<div class="panel panel-info">
+    <div class="panel-heading text-center">
+        <label>Detalii <a href="@Url.Action("EditInfo", new { id = Model.ID})"><i class="glyphicon glyphicon-edit" style="color:grey"></i></a></label>
+    </div>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Nr. Deviz</th>
+                <th>
+                    @if (Model.pFizica_pJuridica == true)
+                    {
+                        @:Nume
+                    }
+                    else
+                    {
+                        @:Client
+                    }
+                </th>
+                <th>
+                    @if (Model.pFizica_pJuridica == true)
+                    {
+                        @:Prenume
+                    }
+                    else
+                    {
+                        @:Delegat
+                    }
+                </th>
+                <th>Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                @foreach (var item in Model.Mains)
+                {
+                    <td>@Html.DisplayFor(x => item.MainID)</td>
+                }
+                @if (Model.pFizica_pJuridica == true)
+                {
+                    <td>@Html.DisplayFor(x => x.FirstName)</td>
+                    <td>@Html.DisplayFor(x => x.LastName)</td>
+                }
+                else
+                {
+                    <td>@Html.DisplayFor(x => x.Client)</td>
+                    <td>@Html.DisplayFor(x => x.Delegat)</td>
+                }
+                <td>@Html.DisplayFor(x => x.Date)</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+@* Informatii masina *@
+
+<div class="row">
+    <div class="form-group col-lg-6">
+        <div class="panel panel-info">
+            @foreach (var item in Model.Mains)
+            {
+                <div class="panel-heading text-center">
+                    <label>Informatii Masina <a href="@Url.Action("EditCar", new { id = item.CarDetailID, custId = Model.ID, mainID = item.MainID})"><i class="glyphicon glyphicon-edit" style="color:grey"></i></a></label>
+                </div>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Nr. Inm.</th>
+                            <th>Marca Auto</th>
+                            <th>Cat. Auto</th>
+                            <th>Km la Bord</th>
+                            <th>Dimensiune</th>
+                            <th>RIM</th>
+                            <th>Janta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>@Html.DisplayFor(x => item.CarDetail.NrInmatricular)</td>
+                            <td>@Html.DisplayFor(x => item.CarDetail.MarcaAuto)</td>
+                            <td>@Html.DisplayFor(x => item.CarDetail.CarType.Name)</td>
+                            <td>@Html.DisplayFor(x => item.CarDetail.KmRulati)</td>
+                            <td>@Html.DisplayFor(x => item.CarDetail.DimensiuneaA)</td>
+                            <td>@Html.DisplayFor(x => item.CarDetail.Rim)</td>
+                            <td>
+                                @if (item.CarDetail.AluminiuOtel == true)
+                                {
+                                    <p>Aluminiu</p>
+                                }
+                                else
+                                {
+                                    <p>Otel</p>
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+
+    @* Informatii Anvelopa *@
+
+    <div class="form-group col-lg-6">
+        <div class="panel panel-info">
+            @foreach (var item in Model.Mains)
+            {
+                <div class="panel-heading text-center">
+                    <label>
+                        Informatii Anvelopa
+                        @{
+                string isNou = "";
+                if (item.AnvelopeNoi.NoiRulate)
+                {
+                    isNou = "glyphicon-edit";
+                }
+                else
+                {
+                    isNou = "glyphicon-pencil";
+                }
+                        }
+                        <a href="@Url.Action("EditAnvelopa", new { id = item.AnvelopeNoiID, custId = Model.ID })"><i class="glyphicon @isNou" style="color:grey"></i></a>
+                    </label>
+                </div>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Anvelope/Jante M.</th>
+                            <th>Marca A.</th>
+                            <th>Profil A.</th>
+                            <th>Dot/Serie</th>
+                            <th>Cantiate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (item.AnvelopeNoi.NoiRulate == false)
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center">
+                                    @if (item.Customer.pFizica_pJuridica == true)
+                                    {
+                                        @Model.FirstName @: @Model.LastName
+                                    }
+                                    else
+                                    {
+                                        @Model.Client
+                                    }
+                                    are anvelope rulate
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td>
+                                    <p>Noi</p>
+                                </td>
+                                <td>@Html.DisplayFor(x => item.AnvelopeNoi.Profil.Anvelope.Marca)</td>
+                                <td>@Html.DisplayFor(x => item.AnvelopeNoi.Profil.Name)</td>
+                                <td>@Html.DisplayFor(x => item.AnvelopeNoi.DotSerie)</td>
+                                <td>@Html.DisplayFor(x => item.AnvelopeNoi.Cantitate)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    @* Informatii Depozitare *@
+
+    <div class="form-group col-lg-6">
+        <div class="panel panel-info">
+            @foreach (var item in Model.Mains)
+            {
+                <div class="panel-heading text-center">
+                    <label>
+                        Informatii Depozitare
+                        @{
+                string isDepo = "";
+                if (item.Depozitare.IsDepozitare)
+                {
+                    isDepo = "glyphicon-edit";
+                }
+                else
+                {
+                    isDepo = "glyphicon-pencil";
+                }
+                        }
+                        <a href="@Url.Action("EditDepozitare", new { id = item.DepozitareID, custID = Model.ID, carDetail = item.CarDetail.CarDetailID })"><i class="glyphicon @isDepo" style="color:grey"></i></a>
+                    </label>
+                </div>
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Anvelopa</th>
+                            <th>Profil</th>
+                            <th>Dimensiune</th>
+                            <th>Cantitate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (item.Depozitare.IsDepozitare == false)
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center">
+                                    @if (item.Customer.pFizica_pJuridica == true)
+                                    {
+                                        @Model.FirstName @: @Model.LastName
+                                    }
+                                    else
+                                    {
+                                        @Model.Client
+                                    }
+                                    nu are anvelope depozitate
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            <tr>
+                                <td>@item.Depozitare.Data</td>
+                                <td>@Html.DisplayFor(x => item.Depozitare.Profil.Anvelope.Marca)</td>
+                                <td>@Html.DisplayFor(x => item.Depozitare.Profil.Name)</td>
+                                <td>@item.Depozitare.Dimensiune</td>
+                                <td>@item.Depozitare.Cantitate</td>
+                            </tr>
+                            <tr>
+                                <td colspan="6" class="text-center">Descriere: @item.Depozitare.Descriere</td>
+                            </tr>
+                        }
+
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+
+
+    @* Informatii Servicii Oferite *@
+    <div class="form-group col-lg-6">
+        <div class="panel panel-info">
+            @{
+                float ar = 0;
+                float partialPrice = 0;
+                float totalAr = 0;
+                float totalPartialPrice = 0;
+            }
+            <div class="panel-heading text-center">
+                <label>Servicii oferite</label>
+            </div>
+            <table class="table table-bordered table-hover">
+                <tr>
+                    <th>Servicii</th>
+                    <th>Cant.</th>
+                    <th>Total</th>
+                    <th>Platit</th>
+                    <th></th>
+                </tr>
+                @foreach (var main in Model.Mains)
+                {
+                    foreach (var item in main.CustomerServices)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(x => item.NamedServ)
+                                (Pret/1buc.- @item.Pret Ron)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(x => item.Cantitate)
+                            </td>
+                            <td>
+                                @{
+                        ar = item.Cantitate * item.Pret;
+                        <label>@ar.ToString("#,##0.00") Ron</label>
+                        totalAr += ar;
+                                }
+                            </td>
+                            <td>
+                                @if (item.IsEditable == true && main.AnvelopeNoi.Cantitate != null)
+                                {
+                                    if (main.AnvelopeNoi.Cantitate >= item.Cantitate)
+                                    {
+                                        partialPrice = 0;
+                                        <label>@partialPrice</label>
+                                    }
+                                    else
+                                    {
+                                        partialPrice = (item.Cantitate - (float)main.AnvelopeNoi.Cantitate) * item.Pret;
+                                        <label>@partialPrice.ToString("#,##0.00") Ron</label>
+                                    }
+                                }
+                                else
+                                {
+                                    partialPrice = item.Cantitate * item.Pret;
+                                    <label>@partialPrice.ToString("#,##0.00") Ron</label>
+                                }
+                                @{
+                        totalPartialPrice += partialPrice;
+                                }
+                            </td>
+                            <td class="text-center">
+                                <a href="@Url.Action("editServicii", new { id = item.ID, custID = Model.ID })"><i class="glyphicon glyphicon-edit" style="color:grey"></i></a>
+                            </td>
+                        </tr>
+                    }
+                    <tr>
+                        <td>
+                            <b>Discount: @main.Discount%</b>
+                        </td>
+                        <td><b>Total:</b></td>
+                        <td class="success"><b>@totalAr.ToString("#,##0.00") Ron</b></td>
+                        @{
+                    var discounted = totalPartialPrice - ((totalPartialPrice * main.Discount) / 100);
+                        }
+                        <td class="success">
+                            <b>
+                                @if (main.Discount == null || main.Discount == 0)
+                                {
+                                    <b>@totalPartialPrice.ToString("#,##0.00") Ron</b>
+                                }
+                                else
+                                {
+                                    <b>@discounted Ron</b>
+                                }
+                            </b>
+                        </td>
+                        <td></td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row container-fluid">
+    <div class="form-group form-group-sm">
+        <label>Mentiuni:</label>
+        @foreach (var item in Model.Mains)
+        {
+            <div class="form-control">
+                @if (item.CarDetail.Descriere == null)
+                {
+                    <p class="text-center">Nu sunt mentiuni <a href="@Url.Action("editMentiuni", new { id = item.CarDetail.CarDetailID, custID = Model.ID })"><i class="glyphicon glyphicon-pencil"></i></a></p>
+                }
+                else
+                {
+
+                    @Html.DisplayFor(x => item.CarDetail.Descriere)
+                    <a href="@Url.Action("editMentiuni", new { id = item.CarDetail.CarDetailID, custID = Model.ID })"><i class="glyphicon glyphicon-edit" style="color:grey"></i></a>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+
+<div class="form-group">
+
+    <div class="form-group">
+        <button class="btn btn-success btn-sm" type="button" data-toggle="collapse" data-target="#suppInfo" aria-expanded="false" aria-controls="suppInfo">
+            <i class="glyphicon glyphicon-plus"></i>
+            Informatii Suplimentare
+        </button>
+
+        <button class="btn btn-success btn-sm" type="button" data-toggle="collapse" data-target="#istoric" aria-expanded="false" aria-controls="istoric">
+            <i class="glyphicon glyphicon-plus"></i>
+            Istoric
+            @if (Model.pFizica_pJuridica == true)
+            {
+                @Model.FirstName @Model.LastName
+            }
+            else
+            {
+                @Model.Client
+            }
+        </button>
+        @foreach (var item in Model.Mains)
+        {
+            <a href="@Url.Action("EditPayment", new { id = item.MainID})" class="btn btn-success btn-sm">
+                @if (item.PaymentMethodID != null)
+                {
+                    @item.PaymentMethod.Name
+                }
+                else
+                {
+                    @:Plata
+                }
+            </a>
+            if (item.OperatorID == null)
+            {
+                <a href="@Url.Action("EditOperator", new { id = item.MainID})" class="btn btn-success btn-sm">Adaugare operator</a>
+            }
+        }
+    </div>
+
+    @*Informatii Suplimentare*@
+
+    <div class="collapse" id="suppInfo">
+        <div class="container-fluid">
+            <div class="panel panel-info">
+                <div class="panel-heading text-center">
+                    Informatii Suplimentare <b>@Model.FirstName @Model.LastName</b>
+                </div>
+
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th class="col-sm-6 text-center">Email</th>
+                            <th class="text-center">Nr. Mobil</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            @{
+                                var phoneNumber = Model.PhoneNumber;
+                            }
+                            @if (phoneNumber == null)
+                            {
+                                <td colspan="3" class="text-center">@Model.FirstName @Model.LastName nu are informatii suplimentare in baza de date <a href="@Url.Action("EditInfo", new { id = Model.ID})"><i class="glyphicon glyphicon-pencil" style="color:grey"></i></a></td>
+                            }
+                            else
+                            {
+                                <td>@Html.DisplayFor(x => x.Email)</td>
+                                <td>@Html.DisplayFor(x => x.PhoneNumber)</td>
+                            }
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    @*Istoric Persoana*@
+    <div class="collapse" id="istoric">
+        <div class="container-fluid">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Nr. Deviz</th>
+                        <th>Nr. Inmatriculare</th>
+                        <th>Data</th>
+                        <th>Nume / Client</th>
+                        <th>Prenume / Delegat</th>
+                        <th>Depozitare</th>
+                        <th>Modificare</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int numIstoric = 0;
+                        IEnumerable<PangusServices.Models.Main> cars = ViewBag.carDetails;
+                        foreach (var item in cars)
+                        {
+                            string selectedRow = "";
+                            if (Model.ID == item.Customer.ID)
+                            {
+                                selectedRow = "success";
+                            }
+                            numIstoric++;
+                            <tr class="@selectedRow">
+                                <td>@item.MainID</td>
+                                <td>@item.CarDetail.NrInmatricular</td>
+                                <td>@item.Customer.Date.Date</td>
+                                @if (item.Customer.pFizica_pJuridica == true)
+                                {
+                                    <td>@item.Customer.FirstName</td>
+                                    <td>@item.Customer.LastName</td>
+                                }
+                                else
+                                {
+                                    <td>@item.Customer.Client</td>
+                                    <td>@item.Customer.Delegat</td>
+                                }
+                                <td class="text-center">
+                                    @if (item.Depozitare.IsDepozitare == false)
+                                    {
+                                        <i class="glyphicon glyphicon-remove-circle" style="color:grey"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="glyphicon glyphicon-check" style="color:grey"></i>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @Html.ActionLink("Detalii", "Details", new { id = item.Customer.ID, NrInmatricular = item.CarDetail.NrInmatricular }, new { @class = "btn btn-primary btn-xs disable" })
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Total</th>
+
+                        <td>@numIstoric</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+@*Operator*@
+@foreach (var item in Model.Mains)
+{
+    if (item.OperatorID != null)
+    {
+        <p>Operator: @item.OperatorName <a href="@Url.Action("EditOperator", new { id = item.MainID})"><i class="glyphicon glyphicon-edit"></i></a></p>
+    }
+}
+<div class="btn-group-sm">
+    @Html.ActionLink("Inapoi", "Index", null, new { @class = "btn btn-primary" })
+    <label><a href="@Url.Action("Print", new { id = Model.ID})" class="btn btn-success btn-sm"><i class="glyphicon glyphicon-print"></i> Print</a></label>
+    <label class="pull-right"><i class="glyphicon glyphicon-edit"></i> Editare | <i class="glyphicon glyphicon-pencil"></i> Adaugare nou</label>
+</div>

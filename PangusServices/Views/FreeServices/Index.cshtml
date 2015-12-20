@@ -1,0 +1,128 @@
+﻿@model IEnumerable<PangusServices.Models.Main>
+
+@{
+    ViewBag.Title = "Main Menu";
+}
+
+<div class=text-center>
+    <div class="form-group">
+        <label class="btn btn-primary pfizica">Persoana Fizica</label>
+        <label class="btn btn-primary jfizica">Persoana Juridica</label>
+        @Html.ActionLink("Depozitare", "Index", "Depozitare", new { area = "Admin" }, new { @class = "btn btn-primary" })
+    </div>
+</div>
+
+<div class="dimensiune">
+    @using (Html.BeginForm("Create", "FreeServices", FormMethod.Get))
+    {
+        <div class="row">
+            <div class="form-group-sm col-lg-2">
+                <label>Dimensiune</label>
+                <b>@Html.TextBox("dimensiune", null, new { @class = "form-control", @id = "dim" })</b>
+            </div>
+            <div class="form-group-sm col-lg-1">
+                <label>RIM</label>
+                <b>@Html.DropDownList("dimTypeID", null, new { @class = "form-control" })</b>
+            </div>
+            <div class="form-group">
+                <br />
+                <input type="submit" value="Nou" class="btn btn-success" id="creare" disabled="disabled" />
+            </div>
+        </div>
+    }
+</div>
+
+<div class="jdimensiune">
+    @using (Html.BeginForm("PJCreate", "FreeServices", FormMethod.Get))
+    {
+        <div class="row">
+            <div class="form-group-sm col-lg-2">
+                <label>Dimensiune</label>
+                <b>@Html.TextBox("dimensiune", null, new { @class = "form-control", @id = "jdim" })</b>
+            </div>
+            <div class="form-group-sm col-lg-1">
+                <label>RIM</label>
+                <b>@Html.DropDownList("dimTypeID", null, new { @class = "form-control" })</b>
+            </div>
+            <div class="form-group">
+                <br />
+                <input type="submit" value="Nou" class="btn btn-success" id="jcreare" disabled="disabled" />
+            </div>
+        </div>
+    }
+</div>
+<br />
+<div class="panel panel-primary">
+    <div class="panel-heading text-center">
+        <b>Masini Terminate (pentru a actualiza datele da-ti refresh!!!)</b>
+    </div>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Nr.Inmatriculare</th>
+                <th>Nume</th>
+                <th>Prenume</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Count() == null)
+            {
+                <tr>
+                    <td colspan="3" class="text-center">Nu sunt masini terminate</td>
+                </tr>
+            }
+            @foreach (var item in Model)
+            {
+                <tr class="success">
+                    <td>@Html.DisplayFor(x => item.CarDetail.NrInmatricular)</td>
+                    @if (item.Customer.pFizica_pJuridica == true)
+                    {
+                        <td>@Html.DisplayFor(x => item.Customer.FirstName)</td>
+                        <td>@Html.DisplayFor(x => item.Customer.LastName)</td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(x => item.Customer.Client)</td>
+                        <td>@Html.DisplayFor(x => item.Customer.Delegat)</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts{
+
+    <script>
+        $(document).ready(function () {
+            $('.dimensiune').hide();
+            $('.jdimensiune').hide();
+
+            $('.pfizica').click(function () {
+                $('.dimensiune').toggle('slow');
+            });
+
+            $('#dim').keyup(function (data) {
+                if ($(this).val() != '') {
+                    $('#creare').removeAttr("disabled");
+                }
+                else {
+                    $('#creare').attr("disabled", "disabled");
+                }
+            });
+
+            $('.jfizica').click(function () {
+                $('.jdimensiune').toggle('slow');
+            });
+
+            $('#jdim').keyup(function (data) {
+                if ($(this).val() != '') {
+                    $('#jcreare').removeAttr("disabled");
+                }
+                else {
+                    $('#jcreare').attr("disabled", "disabled");
+                }
+            });
+        });
+    </script>
+}

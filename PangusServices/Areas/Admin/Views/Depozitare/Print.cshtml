@@ -1,0 +1,80 @@
+﻿@model PangusServices.Models.Depozitare
+
+<html>
+<head>
+    <title>Raport</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        #mentiuni{
+            padding-top:45px;
+        }
+    </style>
+</head>
+<body>
+    <h6>SC Pangus Service SRL <br />  RO 7444191 / J19/351/1995 <br /> PL. Sfantu Gheorghe <br /> Tel. 0367 409 500 / 0742 201 098 <br /> Email: pangus@rdsbv.ro <br /></h6>
+    <h2 style="text-align:center">FISA DE DEPOZITARE</h2>
+    <br />
+    <br />
+    <h5>
+        Punct de lucru: @if (Model.Sfantu_Mciuc == true)
+        {
+            @:Sfantu Gheorghe
+        }
+        else
+        {
+            @:Miercurea Ciuc
+        }
+    </h5>
+    <table style=" width:100%">
+        <tr>
+            <td>Nr.Inreg: <b>@Model.DepozitareID</b></td>
+            <td>Data: <b>@Model.Data.ToShortDateString()</b></td>
+            <td>Nr.Factura: <b>@Model.DepozitareID</b></td>
+        </tr>
+    </table>
+    <table style=" width:100%">
+        <tr>
+                <td>Nume / Client: <b>@Model.FirstName</b></td>
+                <td>Prenume / Delegat: <b>@Model.LastName</b></td>
+        </tr>
+        <tr>
+            <td colspan="2">Nr. Inmatriculare: <b>@Html.DisplayFor(x => x.NrInmatricuare)</b></td>
+        </tr>
+    </table>
+
+    <table style="width:80%; margin: 0 auto">
+        <caption><h3><b>Detalii anvelopa</b></h3></caption>
+        <tr>
+            <td>Marca Anvelopa: <b>@Model.Profil.Anvelope.Marca</b></td>
+            <td>Profil Anvelopa: <b>@Model.Profil.Name</b></td>
+            <td>Dimensiune: <b>@Model.Dimensiune</b></td>
+            <td>Cantitate: <b>@Model.Cantitate</b></td>
+        </tr>
+    </table>
+
+    <table style="width:100%">
+        <caption><h3><b>Mentiuni</b></h3></caption>
+        <tr>
+            @if (Model.Descriere == null)
+            {
+                <td id="mentiuni"></td>
+            }
+            else
+            {
+                <td rowspan="3">@Model.Descriere <br />  Altele: </td>
+            }
+        </tr>
+    </table>
+    <br />
+    <div style="float:left">
+        <h4>Data, <br /> <br />......................</h4>
+    </div>
+    <div style="float:right">
+        <h4 style="text-align:right">Semnatura / Stampila <br /> <br />..................................</h4>
+    </div>
+</body>
+</html>

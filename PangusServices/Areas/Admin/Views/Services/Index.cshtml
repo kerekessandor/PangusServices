@@ -1,0 +1,139 @@
+﻿@model IEnumerable<PangusServices.Models.Main>
+
+<div class="panel panel-primary">
+    <div class="panel-heading text-center">
+        Fise de lucru - @DateTime.Today.Day/@DateTime.Today.Month/@DateTime.Today.Year
+    </div>
+    <table class="table table-hover table-bordered">
+        <thead>
+            <tr>
+                <th>Nr.</th>
+                <th>Nr.Deviz</th>
+                <th>Nr.Inm.</th>
+                <th>Nume / Client</th>
+                <th>Prenume / Delegat</th>
+                <th>Data</th>
+                <th class="text-center">Dep.</th>
+                <th class="text-center">Mod de plata</th>
+                <th>Locatie</th>
+                <th class="text-center">Modificare</th>
+                <th class="text-center">Terminat</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Count() == 0)
+            {
+                <tr class="text-center">
+                    <td colspan="11">Nu sunt fise noi pentru ziua de azi!</td>
+                </tr>
+            }
+            @{
+                var number = 0;
+            foreach (var item in Model)
+            {
+                number++;
+                string hasPayment = "";
+                if (item.PaymentMethodID == null)
+                {
+                    hasPayment = "danger";
+                }
+                else
+                {
+                    hasPayment = "success";
+                }
+                <tr class="@hasPayment">
+                    <td>@number</td>
+                    <td>
+                        @Html.DisplayFor(x => item.MainID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(x => item.CarDetail.NrInmatricular)
+                    </td>
+                    @if (item.Customer.pFizica_pJuridica == true)
+                    {
+                        <td>@Html.DisplayFor(x => item.Customer.FirstName)</td>
+                        <td>@Html.DisplayFor(x => item.Customer.LastName)</td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(x => item.Customer.Client)</td>
+                        <td>@Html.DisplayFor(x => item.Customer.Delegat)</td>
+                    }
+                    <td>
+                        @Html.DisplayFor(x => item.Customer.Date)
+                    </td>
+                    <td class="text-center col-sm-1">
+                        @{
+                    string isNou = "";
+                    if (item.Depozitare.IsDepozitare)
+                    {
+                        isNou = "glyphicon-edit";
+                    }
+                    else
+                    {
+                        isNou = "glyphicon-pencil";
+                    }
+                        }
+                        <a href="@Url.Action("EditDepozitare", new { id = item.DepozitareID, custId = item.Customer.ID, carDetail = item.CarDetail.CarDetailID, mainID = item.MainID })"><i class="glyphicon @isNou" style="color:grey"></i></a>
+                    </td>
+                    <td class="text-center">
+                        @if (item.PaymentMethodID == null)
+                        {
+                            @Html.ActionLink("Adaugare", "AddPayment", new { id = item.MainID }, new { @class = "btn btn-primary btn-xs" })
+                        }
+                        else
+                        {
+                            @Html.DisplayFor(x => item.PaymentMethod.Name)
+                            <a href="@Url.Action("EditPayment", new { id = item.MainID})"><i class="glyphicon glyphicon-edit"></i></a>
+                        }
+                    </td>
+                    @if(item.Sfantu_MCiuc == true)
+                    {
+                        <td>Sf.Gheorghe</td>
+                    }
+                    else
+                    {
+                        <td>M.Ciuc</td>
+                    }
+                    <td class="text-center col-sm-2">
+                        @using (Html.BeginForm("Delete", "Services", new { id = item.MainID }, FormMethod.Post, new { onclick = "return confirm('Doriti sa stergeti clientul definitiv?')" }))
+                        {
+                            @Html.ActionLink("Discount", "Discount", new { id = item.MainID, custId = item.CustomerID }, new { @class = "btn btn-success btn-xs" })
+                            @Html.ActionLink("Detalii", "Details", new { id = item.CustomerID, NrInmatricular = item.CarDetail.NrInmatricular }, new { @class = "btn btn-success btn-xs" })
+                            <button class="btn btn-danger btn-xs">Delete</button>
+                        }
+                    </td>
+                    <td class="text-center">
+                        @using (Html.BeginForm("isDone", "Services", new { id = item.MainID }))
+                        {
+
+                            if (item.isDone == true)
+                            {
+                                <button class="btn btn-success btn-xs disabled">
+                                    <i class="glyphicon glyphicon-ok-circle"></i>
+                                </button>
+                            }
+                            else
+                            {
+                                if (item.PaymentMethodID != null)
+                                {
+                                    <button class="btn btn-danger btn-xs">
+                                        <i class="glyphicon glyphicon-remove-circle"></i>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-danger btn-xs disabled">
+                                        <i class="glyphicon glyphicon-remove-circle"></i>
+                                    </button>
+                                }
+                            }
+
+                        }
+                    </td>
+                </tr>
+            }
+            }
+        </tbody>
+    </table>
+</div>

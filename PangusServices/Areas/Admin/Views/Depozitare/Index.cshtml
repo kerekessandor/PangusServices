@@ -1,0 +1,105 @@
+﻿@model PagedList.IPagedList<PangusServices.Models.Depozitare>
+@using PagedList.Mvc
+
+@{
+    ViewBag.Title = "Depozitare";
+}
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+
+<div class="row form-group container-fluid">
+    @using (Html.BeginForm("Index", "Depozitare", FormMethod.Get))
+    {
+        <div class="input-group col-lg-2 pull-right">
+            @Html.TextBox("SearchString", ViewBag.CurrentFilter as string, new { @class = "form-control", id = "txtSearch", placeholder = "Cautare" })
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+            </span>
+        </div>
+    }
+</div>
+
+<div class="panel panel-primary">
+    <div class="panel-heading text-center">
+        <b>Persoane cu depozitare</b>
+        <a href="@Url.Action("Create")" style="color:white" class="pull-right">Nou <i class="glyphicon glyphicon-plus"></i></a>
+    </div>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Nr.Inm.</th>
+                <th>@Html.ActionLink("Nume", "Index", new { sortOrder = ViewBag.NameSortParm })</th>
+                <th>Prenume</th>
+                <th class="text-center">@Html.ActionLink("Data", "Index", new { sortOrder = ViewBag.DateSortParm })</th>
+                <th>Anvelopa</th>
+                <th>Profil</th>
+                <th class="text-center">Cant.</th>
+                <th>Locatie</th>
+                <th class="text-center">Sterge / Descriere</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Count() == 0)
+            {
+                <tr class="text-center">
+                    <td colspan="8">Nu sunt anvelope depozitate</td>
+                </tr>
+            }
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td class="col-lg-1">@Html.DisplayFor(x => item.NrInmatricuare)</td>
+                    <td>@Html.DisplayFor(x => item.FirstName)</td>
+                    <td>@Html.DisplayFor(x => item.LastName)</td>
+                    <td class="text-center">@Html.DisplayFor(x => item.Data)</td>
+                    <td>@Html.DisplayFor(x => item.Profil.Anvelope.Marca)</td>
+                    <td>@Html.DisplayFor(x => item.Profil.Name)</td>
+                    <td class="text-center">@Html.DisplayFor(x => item.Cantitate)</td>
+                    @if (item.Sfantu_Mciuc == true)
+                    {
+                        <td>Sf.Gheorghe</td>
+                    }
+                    else
+                    {
+                        <td>M.Ciuc</td>
+                    }
+                    <td class="text-center">
+                        @using (Html.BeginForm("Delete", "Depozitare", new { id = item.DepozitareID }, FormMethod.Post, new { onclick = "return confirm('Doriti sa stergeti clientul definitiv?')" }))
+                        {
+                            @Html.ActionLink("Editare", "Edit", new { id = item.DepozitareID }, new { @class = "btn btn-primary btn-xs" })
+                            @Html.ActionLink("Print", "Print", new { id = item.DepozitareID }, new { @class="btn btn-success btn-xs"})
+                            <button class="btn btn-danger btn-xs">Sterge</button>
+                            <button type="button" class="btn btn-default btn-xs" data-toggle="tooltip" data-placement="bottom" title="@Html.DisplayFor(x => item.Descriere)">Info</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@Html.ActionLink("Creeaza nou", "Create", null, new { @class = "btn btn-primary" })
+<a href="@Url.RouteUrl("freeServices")" class="btn btn-default">Inapoi</a>
+
+<div class="pull-right">
+    <i class="text-center">Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount</i>
+
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+</div>
+
+@section Scripts
+{
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        });
+
+        $(function () {
+            $("#txtSearch").autocomplete({
+                source: '@Url.Action("GetServices")'
+            });
+        });
+    </script>
+}
+

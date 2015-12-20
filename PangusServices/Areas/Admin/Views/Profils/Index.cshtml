@@ -1,0 +1,51 @@
+﻿@model IEnumerable<PangusServices.Models.Profil>
+
+@{
+    ViewBag.Title = "Profil Anvelope";
+}
+
+<div class="panel panel-primary">
+    <div class="panel-heading text-center">
+        <b>Profil Anvelope</b>
+        <a href="@Url.Action("Create")" style="color:white" class="pull-right">Nou <i class="glyphicon glyphicon-plus"></i></a>
+    </div>
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Denumire</th>
+                <th>Anvelopa</th>
+                <th>Modificare</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Count() == 0)
+            {
+                <tr>
+                    <td colspan="4" class="text-center">
+                        Gol
+                    </td>
+                </tr>
+            }
+            @foreach(var item in Model)
+            {
+                <tr>
+                    <td>@item.ProfilID</td>
+                    <td>@item.Name</td>
+                    <td>@item.Anvelope.Marca</td>
+                    <td>
+                        @using (Html.BeginForm("Delete", "Profils", new { id = item.ProfilID }, FormMethod.Post, new { onclick = "return confirm('Doriti sa stergeti clientul definitiv?')" }))
+                        {
+                            @Html.ActionLink("Modificare", "Edit", "Profils", new { id = item.ProfilID }, new { @class = "btn btn-xs btn-primary" })
+                            <button class="btn btn-xs btn-danger">Sterge</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@Html.ActionLink("Nou", "Create", null, new { @class="btn btn-primary"})
+
+

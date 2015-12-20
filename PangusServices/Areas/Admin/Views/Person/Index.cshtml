@@ -1,0 +1,94 @@
+﻿@model PagedList.IPagedList<PangusServices.Models.Customer>
+@using PagedList.Mvc
+
+
+<link href="~/Content/PagedList.css" rel="stylesheet" />
+
+
+@{
+    ViewBag.Title = "Vásárlók";
+}
+
+@using (Html.BeginForm("Index", "Servicii", FormMethod.Get))
+{
+    <input type="submit" value="Keresés" class="btn btn-primary btn-xs pull-right" /> @Html.TextBox("SearchString", ViewBag.CurrentFilter as string, new { @class = "pull-right", id = "txtSearch" });
+}
+<br />
+<br />
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        Vásárlók
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>
+                    ID
+                </th>
+                <th>
+                    @Html.ActionLink("Keresztnév", "Index", new { sortOrder = ViewBag.NameSortParm })
+                </th>
+                <th>
+                    Utónév
+                </th>
+                <th>
+                    Email
+                </th>
+                <th>
+                    Telefonszám
+                </th>
+                <th>
+                    @Html.ActionLink("Autó", "Index", new { sortOrder = ViewBag.PriceSortParm })
+                </th>
+                <th>Módosítás</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var customer in Model)
+            {
+                <tr>
+                    <td>@customer.ID</td>
+                    <td>@customer.FirstName</td>
+                    <td>@customer.LastName</td>
+                    <td>@customer.Email</td>
+                    <td>@customer.PhoneNumber</td>
+                    <td></td>
+                    <td>
+                        @using (Html.BeginForm("Delete", "Servicii", new { id = customer.ID }))
+                        {
+                            @Html.ActionLink("Editálás", "Edit", new { id = customer.ID }, new { @class = "btn btn-primary btn-xs" })
+                            <button class="btn btn-danger btn-xs">Törlés</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="pull-left">
+    @Html.ActionLink("Új hozzáadása", "Create", null, new { @class = "btn btn-primary" })
+</div>
+
+<div class="pull-right">
+    <i class="text-center">Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount</i>
+
+    @Html.PagedListPager(Model, page => Url.Action("Index", new { page, sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter }))
+</div>
+
+@section scripts
+{
+    <link href="~/Content/Styles/jquery-ui.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#txtSearch").autocomplete({
+                source: '@Url.Action("GetServices")'
+            });
+        });
+    </script>
+}
+
+
+

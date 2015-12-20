@@ -1,0 +1,34 @@
+﻿@model PangusServices.Models.PangusServicii
+@{
+    ViewBag.Title = "Serviciu nou";
+}
+
+@using(Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    
+    <div class="form-group-sm">
+        <label>Serviciu</label>
+        @Html.TextBoxFor(x => x.Name, new { @class="form-control"})
+    </div>
+    <br />
+    <div class="form-group-sm">
+        <label>Categorie de dimensiuni</label>
+        @Html.DropDownList("dimTypeID", null, "Selecteaza o categorie", new { @class = "form-control" })
+    </div>
+    <br />
+    <div class="form-group-sm">
+        <label>Pret</label>
+        @Html.TextBoxFor(x => x.Price, new { @class="form-control"})
+    </div>
+    <br />
+    <div class="form-group-sm">
+        <label>Depinde de anvelopa?</label>
+        @Html.CheckBoxFor(x => x.IsEditable)
+    </div>
+    <br />
+    <input type="submit" value="Salvare" class="btn btn-primary" />
+    <a href="@Url.Action("Index")" class="btn btn-default">Inapoi</a>
+    
+}

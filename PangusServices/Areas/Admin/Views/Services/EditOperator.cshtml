@@ -1,0 +1,34 @@
+﻿@model PangusServices.Models.Main
+
+@{
+    ViewBag.Title = Model.OperatorName;
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken();
+    @Html.ValidationSummary();
+
+    @Html.HiddenFor(x => x.MainID)
+    @Html.HiddenFor(x => x.Sfantu_MCiuc)
+    @Html.HiddenFor(x => x.CustomerID)
+    @Html.HiddenFor(x => x.CarDetailID)
+    @Html.HiddenFor(x => x.DepozitareID)
+    @Html.HiddenFor(x => x.AnvelopeNoiID)
+    @Html.HiddenFor(x => x.PaymentMethodID)
+    @Html.HiddenFor(x => x.isDone)
+
+    <div class="row">
+        <div class="form-group-sm col-lg-4">
+            <label>Operator</label>
+            @Html.DropDownListFor(x => x.OperatorID, (SelectList)ViewBag.OperatorID, new { @class = "form-control" })
+        </div>
+    </div>
+    <br />
+    <div class="row form-group">
+        <input type="submit" value="Salveaza" class="btn btn-primary" />
+        <input type="reset" value="Reseteaza" class="btn btn-danger" />
+        <a href="@Url.Action("Index")" class="btn btn-default">Inapoi</a>
+    </div>
+}
+

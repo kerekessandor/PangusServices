@@ -1,0 +1,40 @@
+﻿@model PangusServices.Models.CustomerService
+
+@{
+    ViewBag.Title = "Edit Servicii";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken();
+    @Html.HiddenFor(x => x.MainID)
+    
+
+
+    <div class="row">
+
+        <div class="form-group col-lg-4 form-group-sm">
+            <label>Serviciu</label>
+            @Html.TextBoxFor(x => x.NamedServ, new { @class = "form-control"})
+        </div>
+
+        <div class="form-group col-sm-1 form-group-sm">
+            <label>Cantitate</label>
+            @Html.TextBoxFor(x => x.Cantitate, new { @class = "form-control" })
+        </div>
+
+        <div class="form-group col-lg-1 form-group-sm">
+            <label>Pret/Buc.</label>
+            @Html.TextBoxFor(x => x.Pret, new { @class="form-control"})
+        </div>
+
+        <div class="form-group col-lg-2 form-group-sm">
+            <label>Depinde de anvelopa?</label>
+            @Html.CheckBoxFor(x => x.IsEditable)
+        </div>
+    </div>
+
+    <input type="submit" value="Salvare" class="btn btn-primary" />
+    <a href="@Url.Action("Details", new { id= ViewBag.backToDetails})" class="btn btn-default">Inapoi</a>
+}
+
